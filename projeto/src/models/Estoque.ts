@@ -2,13 +2,13 @@ import { Carro } from "./Carro";
 
 export class Estoque {
     id_estoque: number;
-    id_carro: Carro;
+    id_carro: number;
     quantidade: number;
     localizacao_patio: string;
     data_entrada: Date;
 
 
-    constructor(id_carro: Carro, quantidade: number, localizacao_patio: string, data_entrada: Date){
+    constructor(id_carro: number, quantidade: number, localizacao_patio: string, data_entrada: Date){
         this.id_estoque = Date.now();
         this.id_carro = id_carro;
         this.quantidade = quantidade;
