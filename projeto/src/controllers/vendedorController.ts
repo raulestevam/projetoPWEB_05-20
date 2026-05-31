@@ -58,7 +58,7 @@ export class vendedorController{
             if (error.message.includes("não encontrado")) {
                 res.status(404).json({ mensagem: error.message });
             } else {
-                // possui notas vinculadas → 422 Unprocessable
+                //erro de possuir notas vinculadas 
                 res.status(422).json({ mensagem: error.message });
             }
         }
