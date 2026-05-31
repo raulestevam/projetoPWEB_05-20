@@ -13,30 +13,33 @@ export class carroRepository{
         return carroRepository.instance;
     }
 
-    public salvarCarro( carro: Carro): void {
+    salvarCarro( carro: Carro): void {
         this.carros.push(carro);
     }
 
-    public buscarTodos(): Carro[] {
+    buscarTodos(): Carro[] {
         return this.carros 
     }
 
-    public buscarPorID(id: number): Carro | undefined {
+    buscarPorID(id: number): Carro | undefined {
         return this.carros.find(p => p.id_carro === id);
     }
 
-    public buscarPorPlaca (placa: string): Carro | undefined {
+    buscarPorPlaca (placa: string): Carro | undefined {
         return this.carros.find(p=> p.placa === placa)
     }
 
-    public atualizarCarro (carroAtt: Carro): void {
+    atualizar (carroAtt: Carro): void {
         const indice = this.carros.findIndex (p => p.id_carro === carroAtt.id_carro);
         if (indice !== -1){
             this.carros[indice] = carroAtt;
         }
     }
 
-    public removerCarro (id:number): void {
-        this.carros.filter(p => p.id_carro !== id)
+    remover(id: number): void {
+    const indice = this.carros.findIndex(c => c.id_carro === id);
+    if (indice !== -1) {
+        this.carros.splice(indice, 1);
     }
+}
 }
