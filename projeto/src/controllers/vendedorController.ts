@@ -5,7 +5,7 @@ const service = new vendedorService();
  
 export function listarVendedores(req: Request, res: Response): void {
     try {
-        const vendedores = service.exibirVendedores();
+        const vendedores = service.listarTodos();
         res.status(200).json(vendedores);
     } catch (error: any) {
         res.status(404).json({ mensagem: error.message });
@@ -15,7 +15,7 @@ export function listarVendedores(req: Request, res: Response): void {
 export function buscarVendedor(req: Request, res: Response): void {
     try {
         const id = Number(req.params.id);
-        const vendedor = service.consultarVendedor(id);
+        const vendedor = service.buscarPorID(id);
         res.status(200).json(vendedor);
     } catch (error: any) {
         res.status(404).json({ mensagem: error.message });
@@ -38,7 +38,7 @@ export function criarVendedor(req: Request, res: Response): void {
 export function atualizarVendedor(req: Request, res: Response): void {
     try {
         const id = Number(req.params.id);
-        service.modificarVendedor(id, req.body);
+        service.atualizarVendedor(id, req.body);
         res.status(200).json({ mensagem: "Vendedor atualizado com sucesso." });
     } catch (error: any) {
         if (error.message.includes("não encontrado")) {
