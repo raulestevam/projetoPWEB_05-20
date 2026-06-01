@@ -7,6 +7,7 @@ import { cadastrarEstoque, buscarEstoqueCarro, buscarEstoquePorId, listarEstoque
 
 const app: Application = express();
 const PORT: number = 3000;
+app.use(express.json());
 
 //REQUESTS VENDEDORES
 app.get("/vendedores", listarVendedores);
@@ -31,15 +32,14 @@ app.delete("/clientes/:id", removerCliente);
 
 //REQUESTS ESTOQUE
 app.get("/estoque", listarEstoques);
-app.get("/estoque/:id", buscarEstoqueCarro);
-app.get("/estoque", buscarEstoquePorId)
+app.get("/estoque/carro/:id_carro", buscarEstoqueCarro);
+app.get("/estoque/:id", buscarEstoquePorId)
 app.post("/estoque", cadastrarEstoque);
 app.put("/estoque/:id", atualizarEstoque);
 app.delete("/estoque/:id", deletarEstoque);
 
 //REQUESTS NOTA FISCAL
 
-app.use(express.json());
 
 app.listen(PORT, () => console.log(`API rodando na URL : http://localhost:${PORT}`));
 
