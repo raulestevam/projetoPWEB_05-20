@@ -29,6 +29,11 @@ export class vendedorRepository{
         return this.vendedores.find(v => v.id_vendedor === id);
     }
 
+    //buscar por matrícula
+    buscarPorMatricula(matricula: string): Vendedor | undefined {
+        return this.vendedores.find(v => v.matricula === matricula);
+    }
+
     //atualizar vendedor
     atualizarVendedor(vendedor: Vendedor, novosDados: any): void {
         vendedor.nome = novosDados.nome;
