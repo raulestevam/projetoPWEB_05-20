@@ -1,5 +1,3 @@
-import { Carro } from "./Carro";
-
 export class Estoque {
     id_estoque: number;
     id_carro: number;
