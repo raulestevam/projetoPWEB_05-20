@@ -5,11 +5,42 @@ import { cadastrarCliente, exibirClientes, consultarCliente, modificarCliente, r
 import { cadastrarCarro, atualizarCarro, listarTodos, buscarPorID, removerCarro } from "./controllers/carroController";
 import { cadastrarEstoque, buscarEstoqueCarro, buscarEstoquePorId, listarEstoques, atualizarEstoque, deletarEstoque } from "./controllers/estoqueController";
 
-
-
 const app: Application = express();
 const PORT: number = 3000;
+
+//REQUESTS VENDEDORES
+app.get("/vendedores", listarVendedores);
+app.get("/vendedores/:id", buscarVendedor);
+app.post("/vendedores", criarVendedor);
+app.put("/vendedores/:id", atualizarVendedor);
+app.delete("/vendedores/:id", deletarVendedor);
+
+//REQUESTS CARRO
+app.get("/carros", listarTodos);
+app.get("/carros/:id", buscarPorID);
+app.post("/carros", cadastrarCarro);
+app.put("/carros/:id", atualizarCarro);
+app.delete("/carros/:id", removerCarro);
+
+//REQUESTS CLIENTE
+app.get("/clientes", exibirClientes);
+app.get("/clientes/:id", consultarCliente);
+app.post("/clientes", cadastrarCliente);
+app.put("/clientes/:id", modificarCliente);
+app.delete("/clientes/:id", removerCliente);
+
+//REQUESTS ESTOQUE
+app.get("/estoque", listarEstoques);
+app.get("/estoque/:id", buscarEstoqueCarro);
+app.get("/estoque", buscarEstoquePorId)
+app.post("/estoque", cadastrarEstoque);
+app.put("/estoque/:id", atualizarEstoque);
+app.delete("/estoque/:id", deletarEstoque);
+
+//REQUESTS NOTA FISCAL
 
 app.use(express.json());
 
 app.listen(PORT, () => console.log(`API rodando na URL : http://localhost:${PORT}`));
+
+export default app;
