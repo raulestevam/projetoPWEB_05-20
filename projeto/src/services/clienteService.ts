@@ -27,10 +27,6 @@ export class clienteService {
     exibirClientes(): Cliente[] {
         const clientesCadastrados = this.clienteRepository.mostrarClientes();
 
-        if(clientesCadastrados.length === 0) {
-            throw new Error ("Não há clientes cadastrados")
-        }
-
         return clientesCadastrados;
     }
 
@@ -63,8 +59,15 @@ export class clienteService {
         if (cpfExiste) {
             throw new Error ("Já há outro cliente cadastrado com o mesmo CPF.");
         }
+        
+        cliente.nome = nome;
+        cliente.cpf = cpf;
+        cliente.telefone = telefone;
+        cliente.email = email;
+        cliente.cidade = cidade;
 
-        this.clienteRepository.atualizarCliente(cliente, clienteInfo);
+        this.clienteRepository.atualizarCliente(cliente);
+        return cliente;
     }
 
     // Metodo de remover cliente está incompleto, pois é necessario estar pronto

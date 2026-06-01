@@ -25,16 +25,19 @@ export class clienteRepository {
         return this.clienteLista.find(cliente => cliente.id_cliente === id);
     }
 
-    atualizarCliente(cliente: Cliente, clienteAtualizado: any) {
-        cliente.nome = clienteAtualizado.nome;
-        cliente.cpf = clienteAtualizado.cpf;
-        cliente.telefone = clienteAtualizado.telefone;
-        cliente.email = clienteAtualizado.email;
-        cliente.cidade = clienteAtualizado.cidade;
+    atualizarCliente(clienteAtualizado: Cliente) {
+        const clienteIndex = this.clienteLista.findIndex(cliente => cliente.id_cliente === clienteAtualizado.id_cliente);
+        
+        if (clienteIndex !== -1) {
+            this.clienteLista[clienteIndex] = clienteAtualizado;
+        }
     }
     
     deletarCliente(id: number) {
         const clienteIndex = this.clienteLista.findIndex(cliente => cliente.id_cliente === id);
-        this.clienteLista.splice(clienteIndex, 1);
+        
+        if (clienteIndex !== -1) {
+            this.clienteLista.splice(clienteIndex, 1);
+        }
     }
 }
