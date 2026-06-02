@@ -49,3 +49,39 @@ export function emitir(req: Request, res: Response): void {
         }
     }
 }
+
+export function listarNotasPorCliente(req: Request, res: Response): void {
+    try {
+        const clienteId = Number(req.params.id); 
+            
+        const notas = NotaFiscalService.buscarNotasPorCliente(clienteId);
+            
+        res.status(200).json(notas);
+    } catch (error: any) {
+        const mensagem = error.message;
+    
+        if (mensagem.includes("não encontrado") || mensagem.includes("não encontradas")) {
+            res.status(404).json({ erro: mensagem });
+        } else {
+            res.status(400).json({ erro: mensagem });
+        }
+    }
+}
+
+export function listarNotasPorVendedor(req: Request, res: Response): void {
+    try {
+        const vendedorId = Number(req.params.id); 
+            
+        const notas = NotaFiscalService.buscarNotasPorVendedor(vendedorId);
+            
+        res.status(200).json(notas);
+    } catch (error: any) {
+        const mensagem = error.message;
+    
+        if (mensagem.includes("não encontrado") || mensagem.includes("não encontradas")) {
+            res.status(404).json({ erro: mensagem });
+        } else {
+            res.status(400).json({ erro: mensagem });
+        }
+    }
+}

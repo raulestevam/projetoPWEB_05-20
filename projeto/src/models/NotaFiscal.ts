@@ -1,6 +1,3 @@
-import { Cliente } from "./Cliente";
-import { Vendedor } from "./Vendedor";
-import { Carro } from "./Carro";
 
 export class NotaFiscal {
     id_nota: number;

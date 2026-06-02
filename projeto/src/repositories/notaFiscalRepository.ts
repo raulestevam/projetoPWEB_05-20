@@ -24,4 +24,16 @@ export class notaFiscalRepository {
     criarNota(nota: NotaFiscal) {
         this.notas.push(nota);
     }
+
+    buscarPorCarroId(id_carro: number) {
+        return this.notas.filter(nota => nota.id_carro === id_carro);
+    }
+
+    buscarPorClienteId(id_cliente: number) {
+        return this.notas.filter(nota => nota.id_cliente === id_cliente);
+    }
+
+    buscarPorVendedorId(id_vendedor: number) {
+        return this.notas.filter(nota => nota.id_vendedor === id_vendedor);
+    }
 }

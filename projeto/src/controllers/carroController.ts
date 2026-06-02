@@ -56,7 +56,23 @@ export function removerCarro(req: Request, res: Response) {
         const id = parseInt(String(req.params.id), 10 );
         CarroService.removerCarro(id);
         res.status(200).json({ mensagem: "Carro removido com sucesso." });
-    } catch (e: unknown) {
-        res.status(400).json({ Mensagem: (e as Error).message});
+    } catch (e: any) {
+        const mensagem = e.message;
+
+        if (mensagem.includes("Carro não")) {
+            res.status(404).json({ error: mensagem });
+        } else {
+            res.status(422).json({ erro: mensagem });
+        }
     }
 }
+
+export function listarCarrosComEstoque(req: Request, res: Response): void {
+    try {
+        const carros = CarroService.listarCarrosComEstoque();
+        res.status(200).json(carros);
+    } catch (e: unknown) {
+        res.status(400).json({ erro: (e as Error).message });
+    }
+}
+

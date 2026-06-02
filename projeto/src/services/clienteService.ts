@@ -1,8 +1,10 @@
 import { Cliente } from "../models/Cliente";
 import { clienteRepository } from "../repositories/clienteRepository";
+import { notaFiscalRepository } from "../repositories/notaFiscalRepository";
 
 export class clienteService {
     clienteRepository: clienteRepository = clienteRepository.getInstance()
+    notafiscalRepository: notaFiscalRepository = notaFiscalRepository.getInstance();
 
     cadastrarCliente(clienteInfo: any): Cliente {
         const { nome, cpf, telefone, email, cidade } = clienteInfo;
@@ -77,6 +79,11 @@ export class clienteService {
 
         if(!cliente) {
             throw new Error ("Cliente não encontrado");
+        }
+
+        const notasVinc = this.notafiscalRepository.buscarPorClienteId(id);
+        if (notasVinc && notasVinc.length > 0) {
+            throw new Error("Não é permitido remover um cliente que possua notas fiscais vinculadas.");
         }
 
         this.clienteRepository.deletarCliente(id);

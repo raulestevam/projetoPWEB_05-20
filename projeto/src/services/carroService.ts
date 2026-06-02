@@ -1,8 +1,12 @@
 import { Carro } from "../models/Carro";
 import { carroRepository } from "../repositories/carroRepository";
+import { estoqueRepository } from "../repositories/estoqueRepository";
+import { notaFiscalRepository } from "../repositories/notaFiscalRepository";
 
 export class carroService {
     private carroRepository = carroRepository.getInstance();
+    private estoquerepository = estoqueRepository.getInstance();
+    private notafiscalRepository = notaFiscalRepository.getInstance();
 
     cadastrarCarro(dados: any): Carro {
         const {marca, modelo, ano, placa, preco, cor} = dados;
@@ -79,13 +83,37 @@ export class carroService {
     this.carroRepository.atualizar(carroExiste);
 
     return carroExiste;
-}
+    }   
 
-    // falta o metodo de remover carro, porém é necessario estar pronto
-    // a nota fiscal e o estoque para nao infligir as regras de negocio
-    removerCarro(id:number): void {
-        this.buscarPorID(id); //metodo pré pronto
+    removerCarro(id: number): void {
+        const carro = this.buscarPorID(id);
+
+        if(!carro) {
+            throw new Error ("Carro não encontrado");
+        }
+        
+        const existeEstoque = this.estoquerepository.buscarEstoqueCarro(id);
+        if (existeEstoque) {
+            throw new Error("Não é permitido remover um carro que possua registros em estoque.");
+        }
+    
+        const notasVinc = this.notafiscalRepository.buscarPorCarroId(id);
+        if (notasVinc && notasVinc.length > 0) {
+            throw new Error("Não é permitido remover um carro que possua notas fiscais vinculadas.");
+        }
+    
         this.carroRepository.remover(id);
+    }
+
+    listarCarrosComEstoque(): Carro[] {
+        const todosCarros = this.carroRepository.buscarTodos();
+        
+        const carrosDisponiveis = todosCarros.filter(carro => {
+            const estoque = this.estoquerepository.buscarEstoqueCarro(carro.id_carro);
+            return estoque && estoque.quantidade > 0;
+        });
+        
+        return carrosDisponiveis;
     }
 
 }

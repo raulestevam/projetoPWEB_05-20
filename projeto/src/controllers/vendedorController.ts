@@ -64,13 +64,3 @@ export function deletarVendedor(req: Request, res: Response): void {
         }
     }
 }
- 
-export function listarNotasDoVendedor(req: Request, res: Response): void {
-    try {
-        const id = Number(req.params.id);
-        const notas = service.listarNotasDoVendedor(id);
-        res.status(200).json(notas);
-    } catch (error: any) {
-        res.status(404).json({ mensagem: error.message });
-    }
-}

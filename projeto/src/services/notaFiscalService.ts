@@ -80,4 +80,26 @@ export class notaFiscalService {
 
         return novaNota;
     }
+
+    buscarNotasPorCliente(clienteId: number) {
+        const notas = this.notaFiscalRepository.listarNotas();
+        const notasDoCliente = notas.filter(nota => nota.id_cliente === clienteId);
+
+        if (notasDoCliente.length === 0) {
+            throw new Error("Notas fiscais não encontradas para este cliente.");
+        }
+
+        return notasDoCliente;
+    }
+
+    buscarNotasPorVendedor(vendedorId: number) {
+        const notas = this.notaFiscalRepository.listarNotas();
+        const notasDoVendedor = notas.filter(nota => nota.id_vendedor === vendedorId);
+
+        if (notasDoVendedor.length === 0) {
+            throw new Error("Notas fiscais não encontradas para este vendedor.");
+        }
+
+        return notasDoVendedor;
+    }
 }

@@ -1,8 +1,10 @@
 import { Vendedor } from "../models/Vendedor";
 import { vendedorRepository } from "../repositories/vendedorRepository";
+import { notaFiscalRepository } from "../repositories/notaFiscalRepository";
 
 export class vendedorService {
     private vendedorRepository = vendedorRepository.getInstance();
+    private notafiscalRepository = notaFiscalRepository.getInstance();
 
     cadastrarVendedor(dados: any): Vendedor {
         const { nome, matricula, comissao_percentual } = dados;
@@ -56,16 +58,22 @@ export class vendedorService {
     }
 
     // Método incompleto, depende de notaFiscalRepository para verificar
-    removerVendedor(id: number): void {
+    removerVendedor(id: number) {
         const vendedor = this.vendedorRepository.buscarVendedor(id);
 
-        if (!vendedor)
-            throw new Error("404: Vendedor não encontrado.");
+        if(!vendedor) {
+            throw new Error ("Vendedor não encontrado");
+        }
+
+        const notasVinc = this.notafiscalRepository.buscarPorVendedorId(id);
+        if (notasVinc && notasVinc.length > 0) {
+            throw new Error("Não é permitido remover um vendedor que possua notas fiscais vinculadas.");
+        }
 
         this.vendedorRepository.deletarVendedor(id);
     }
 
-    // Método incompleto, depende de notaFiscalRepository para buscar
+
     listarNotasDoVendedor(id: number): any[] {
         const vendedor = this.vendedorRepository.buscarVendedor(id);
 
@@ -74,4 +82,6 @@ export class vendedorService {
 
         return [];
     }
+
+
 }

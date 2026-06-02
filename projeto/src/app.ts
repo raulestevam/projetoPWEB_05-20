@@ -1,10 +1,10 @@
 import express, { Application, Request, Response } from "express";
 
-import { listarVendedores, buscarVendedor, criarVendedor, atualizarVendedor, deletarVendedor, listarNotasDoVendedor } from "./controllers/vendedorController";
+import { listarVendedores, buscarVendedor, criarVendedor, atualizarVendedor, deletarVendedor } from "./controllers/vendedorController";
 import { cadastrarCliente, exibirClientes, consultarCliente, modificarCliente, removerCliente } from "./controllers/clienteController";
-import { cadastrarCarro, atualizarCarro, listarTodos, buscarPorID, removerCarro } from "./controllers/carroController";
+import { cadastrarCarro, atualizarCarro, listarTodos, buscarPorID, removerCarro, listarCarrosComEstoque } from "./controllers/carroController";
 import { cadastrarEstoque, buscarEstoqueCarro, buscarEstoquePorId, listarEstoques, atualizarEstoque, deletarEstoque } from "./controllers/estoqueController";
-import { listarNotas, buscarId, emitir } from "./controllers/notaFiscalController";
+import { listarNotas, buscarId, emitir, listarNotasPorCliente, listarNotasPorVendedor } from "./controllers/notaFiscalController";
 
 const app: Application = express();
 const PORT: number = 3000;
@@ -16,9 +16,11 @@ app.get("/vendedores/:id", buscarVendedor);
 app.post("/vendedores", criarVendedor);
 app.put("/vendedores/:id", atualizarVendedor);
 app.delete("/vendedores/:id", deletarVendedor);
+app.get("/vendedores/notas/:id", listarNotasPorVendedor);
 
 //REQUESTS CARRO
 app.get("/carros", listarTodos);
+app.get("/carros/disponiveis", listarCarrosComEstoque);
 app.get("/carros/:id", buscarPorID);
 app.post("/carros", cadastrarCarro);
 app.put("/carros/:id", atualizarCarro);
@@ -30,6 +32,7 @@ app.get("/clientes/:id", consultarCliente);
 app.post("/clientes", cadastrarCliente);
 app.put("/clientes/:id", modificarCliente);
 app.delete("/clientes/:id", removerCliente);
+app.get("/clientes/notas/:id", listarNotasPorCliente);
 
 //REQUESTS ESTOQUE
 app.get("/estoque", listarEstoques);
