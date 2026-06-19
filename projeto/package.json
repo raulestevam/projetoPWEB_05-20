@@ -1,21 +1,21 @@
 {
   "name": "projeto",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "",
+  "main": "dist/app.js",
   "scripts": {
-    "start": "node dist/app.js",
     "build": "npx tsc",
-    "dev": "ts-node src/app.ts"
+    "start": "node dist/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
-    "@types/express": "^5.0.6",
-    "@types/node": "^25.9.1",
-    "express": "^5.2.1",
-    "ts-node": "^10.9.2",
-    "typescript": "^6.0.3"
+    "@types/express": "^5.0.2",
+    "@types/node": "^22.15.21",
+    "express": "^5.1.0",
+    "mysql2": "^3.14.1",
+    "typescript": "^5.8.3"
   }
 }
