@@ -51,3 +51,5 @@ app.delete("/estoque/:id", deletarEstoque);
 app.get("/notas", listarNotas);
 app.get("/notas/:id", buscarId);
 app.post("/notas", emitir);
+
+export default router;
