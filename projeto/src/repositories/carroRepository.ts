@@ -4,6 +4,20 @@ export class carroRepository{
     private static instance: carroRepository;
     private carros: Carro[] = [];
 
+    static getCreateTableQuery(): string {
+    return `
+        CREATE TABLE IF NOT EXISTS Carro (
+            id_carro        BIGINT PRIMARY KEY,
+            marca           VARCHAR(100) NOT NULL,
+            modelo          VARCHAR(100) NOT NULL,
+            ano             INT NOT NULL,
+            placa           VARCHAR(10) NOT NULL UNIQUE,
+            preco           DECIMAL(10,2) NOT NULL,
+            cor             VARCHAR(50) NOT NULL
+        );
+    `;
+}
+
     private constructor() {}
 
     public static getInstance(): carroRepository {
