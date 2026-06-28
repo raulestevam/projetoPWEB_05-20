@@ -8,10 +8,21 @@ export function cadastrarCarro(req: Request, res: Response) {
         const novoCarro = CarroService.cadastrarCarro(req.body);
 
         res.status(201).json({mensagem: "Carro cadastrado com sucesso!", carro: novoCarro});
-    } catch (e: unknown) {
-        res.status(404).json({ Message: (e as Error).message});
+    } catch (e: any) {
+         const mensagem = e.message;
+
+        if (mensagem.includes("400: É necessário")) {
+            res.status(400).json({ erro: mensagem });
+        } else if (mensagem.includes("409: Já existe")) {
+            res.status(409).json({ erro: mensagem });
+        } else if (mensagem.includes("400: O ano do carro")) {
+            res.status(400).json({ erro: mensagem });
+        } else if (mensagem.includes("400: o preço deve")) {
+            res.status(400).json({ erro: mensagem });
+        } 
     }
-}
+    }
+
 
 
 export function listarTodos(req: Request, res: Response) {
@@ -28,8 +39,12 @@ export function buscarPorID(req: Request, res: Response) {
         const id = parseInt(String(req.params.id), 10 );
         const carro = CarroService.buscarPorID(id);
         res.status(200).json(carro);
-    } catch (e: unknown) {
-        res.status(400).json({ Mensagem: (e as Error).message});
+    } catch (e: any) {
+        const mensagem = e.message;
+
+        if (mensagem.includes("404: Carro não")) {
+            res.status(404).json({ erro: mensagem });
+        } 
     }
 }
 
