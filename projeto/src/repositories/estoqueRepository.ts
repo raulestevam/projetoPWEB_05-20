@@ -4,6 +4,19 @@ export class estoqueRepository {
     private static instance: estoqueRepository;
     private estoques: Estoque[] = [];
 
+    static getCreateTableQuery(): string {
+    return `
+        CREATE TABLE IF NOT EXISTS Estoque (
+            id_estoque          BIGINT PRIMARY KEY,
+            id_carro            BIGINT NOT NULL,
+            quantidade          INT NOT NULL,
+            localizacao_patio   VARCHAR(100) NOT NULL,
+            data_entrada        DATETIME NOT NULL,
+            FOREIGN KEY (id_carro) REFERENCES Carro(id_carro)
+        );
+    `;
+}
+
     private constructor() {}
 
     public static getInstance(): estoqueRepository {
