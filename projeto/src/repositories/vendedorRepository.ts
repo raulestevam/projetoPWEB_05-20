@@ -3,6 +3,17 @@ import { Vendedor } from "../models/Vendedor";
 export class vendedorRepository{
     private static instance: vendedorRepository;
     private vendedores: Vendedor[] = [];
+
+    static getCreateTableQuery(): string {
+    return `
+        CREATE TABLE IF NOT EXISTS Vendedor (
+            id_vendedor         BIGINT PRIMARY KEY,
+            nome                VARCHAR(150) NOT NULL,
+            matricula           VARCHAR(50) NOT NULL UNIQUE,
+            comissao_percentual DECIMAL(5,2) NOT NULL
+        );
+    `;
+}
  
     private constructor() {}
 
