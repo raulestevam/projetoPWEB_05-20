@@ -15,7 +15,7 @@ export class estoqueRepository {
             FOREIGN KEY (id_carro) REFERENCES Carro(id_carro)
         );
     `;
-}
+    }
 
     private constructor() {}
 

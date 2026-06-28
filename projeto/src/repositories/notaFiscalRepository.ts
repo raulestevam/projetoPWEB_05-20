@@ -3,6 +3,23 @@ import { NotaFiscal } from "../models/NotaFiscal";
 export class notaFiscalRepository {
     private static instance: notaFiscalRepository;
     private notas: NotaFiscal[] = [];
+
+    static getCreateTableQuery(): string {
+    return `
+        CREATE TABLE IF NOT EXISTS NotaFiscal (
+            id_nota         BIGINT PRIMARY KEY,
+            numero_nota     VARCHAR(50) NOT NULL UNIQUE,
+            data_emissao    DATETIME NOT NULL,
+            valor_total     DECIMAL(10,2) NOT NULL,
+            id_cliente      BIGINT NOT NULL,
+            id_vendedor     BIGINT NOT NULL,
+            id_carro        BIGINT NOT NULL,
+            FOREIGN KEY (id_cliente)  REFERENCES Cliente(id_cliente),
+            FOREIGN KEY (id_vendedor) REFERENCES Vendedor(id_vendedor),
+            FOREIGN KEY (id_carro)    REFERENCES Carro(id_carro)
+        );
+    `;
+}
     
     private constructor() {}
     
