@@ -4,6 +4,19 @@ export class clienteRepository {
     private static instance: clienteRepository;
     private clienteLista: Cliente[] = [];
 
+    static getCreateTableQuery(): string {
+    return `
+        CREATE TABLE IF NOT EXISTS Cliente (
+            id_cliente      BIGINT PRIMARY KEY,
+            nome            VARCHAR(150) NOT NULL,
+            cpf             VARCHAR(14) NOT NULL UNIQUE,
+            telefone        VARCHAR(20) NOT NULL,
+            email           VARCHAR(150),
+            cidade          VARCHAR(100)
+        );
+    `;
+}
+
     private constructor() {}
 
     public static getInstance(): clienteRepository {
