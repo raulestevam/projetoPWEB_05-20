@@ -1,59 +1,84 @@
-import { Carro } from "../models/Carro"; 
+import { Carro } from "../models/Carro";
+import { executarComandoSQL } from "../database/mysql";
 
-export class carroRepository{
+export class carroRepository {
     private static instance: carroRepository;
-    private carros: Carro[] = [];
 
     static getCreateTableQuery(): string {
-    return `
-        CREATE TABLE IF NOT EXISTS Carro (
-            id_carro        BIGINT PRIMARY KEY,
-            marca           VARCHAR(100) NOT NULL,
-            modelo          VARCHAR(100) NOT NULL,
-            ano             INT NOT NULL,
-            placa           VARCHAR(10) NOT NULL UNIQUE,
-            preco           DECIMAL(10,2) NOT NULL,
-            cor             VARCHAR(50) NOT NULL
-        );
-    `;
-}
+        return `
+            CREATE TABLE IF NOT EXISTS Carro (
+                id_carro        BIGINT PRIMARY KEY,
+                marca           VARCHAR(100) NOT NULL,
+                modelo          VARCHAR(100) NOT NULL,
+                ano             INT NOT NULL,
+                placa           VARCHAR(10) NOT NULL UNIQUE,
+                preco           DECIMAL(10,2) NOT NULL,
+                cor             VARCHAR(50) NOT NULL
+            );
+        `;
+    }
 
     private constructor() {}
 
     public static getInstance(): carroRepository {
-        if(!carroRepository.instance){ 
+        if (!carroRepository.instance) {
             carroRepository.instance = new carroRepository();
         }
         return carroRepository.instance;
     }
 
-    salvarCarro( carro: Carro): void {
-        this.carros.push(carro);
+    async salvarCarro(carro: Carro): Promise<void> {
+        const query = `
+            INSERT INTO Carro (id_carro, marca, modelo, ano, placa, preco, cor)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        `;
+        await executarComandoSQL(query, [
+            carro.id_carro,
+            carro.marca,
+            carro.modelo,
+            carro.ano,
+            carro.placa,
+            carro.preco,
+            carro.cor,
+        ]);
     }
 
-    buscarTodos(): Carro[] {
-        return this.carros 
+    async buscarTodos(): Promise<Carro[]> {
+        const query = `SELECT * FROM Carro`;
+        return await executarComandoSQL(query, []);
     }
 
-    buscarPorID(id: number): Carro | undefined {
-        return this.carros.find(p => p.id_carro === id);
+    async buscarPorID(id: number): Promise<Carro | undefined> {
+        const query = `SELECT * FROM Carro WHERE id_carro = ?`;
+        const resultado = await executarComandoSQL(query, [id]);
+        return resultado[0];
     }
 
-    buscarPorPlaca (placa: string): Carro | undefined {
-        return this.carros.find(p=> p.placa === placa)
+    async buscarPorPlaca(placa: string): Promise<Carro | undefined> {
+        const query = `SELECT * FROM Carro WHERE placa = ?`;
+        const resultado = await executarComandoSQL(query, [placa]);
+        return resultado[0];
     }
 
-    atualizar (carroAtt: Carro): void {
-        const indice = this.carros.findIndex (p => p.id_carro === carroAtt.id_carro);
-        if (indice !== -1){
-            this.carros[indice] = carroAtt;
-        }
+    async atualizar(carro: Carro): Promise<void> {
+        const query = `
+            UPDATE Carro
+            SET marca = ?, modelo = ?, ano = ?, placa = ?, preco = ?, cor = ?
+            WHERE id_carro = ?
+        `;
+        await executarComandoSQL(query, [
+            carro.marca,
+            carro.modelo,
+            carro.ano,
+            carro.placa,
+            carro.preco,
+            carro.cor,
+            carro.id_carro,
+        ]);
     }
 
-    remover(id: number): void {
-    const indice = this.carros.findIndex(c => c.id_carro === id);
-    if (indice !== -1) {
-        this.carros.splice(indice, 1);
+    async remover(id: number): Promise<void> {
+        const query = `DELETE FROM Carro WHERE id_carro = ?`;
+        await executarComandoSQL(query, [id]);
     }
-}
 }
