@@ -11,7 +11,7 @@ export class estoqueController {
     cadastrarEstoque = async (req: Request, res: Response): Promise<void> => {
         try {
             const novoEstoque = await this.service.cadastrarEstoque(req.body);
-            res.status(201).json(novoEstoque);
+            res.status(201).json({ novoEstoque, id: novoEstoque.id_estoque });
         } catch (e: any) {
             if (e.message.includes("Já existe")) {
                 res.status(409).json({ erro: e.message });

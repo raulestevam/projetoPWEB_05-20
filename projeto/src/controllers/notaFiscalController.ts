@@ -40,7 +40,7 @@ export class notaFiscalController {
     emitir = async (req: Request, res: Response): Promise<void> => {
         try {
             const novaNota = await this.service.emitirNota(req.body);
-            res.status(201).json(novaNota);
+            res.status(201).json({ novaNota, id: novaNota.id_nota });
         } catch (e: any) {
             if (e.message.includes("já existe")) {
                 res.status(409).json({ erro: e.message });

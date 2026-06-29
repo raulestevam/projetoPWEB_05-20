@@ -80,7 +80,7 @@ export class clienteController {
             await this.service.removerCliente(id);
             res.status(200).json({ mensagem: "Cliente removido com sucesso!" });
         } catch (e: any) {
-            res.status(404).json({ erro: e.message });
+            res.status(422).json({ erro: e.message });
         }
     };
 }
