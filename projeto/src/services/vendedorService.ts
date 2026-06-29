@@ -6,7 +6,7 @@ export class vendedorService {
     private vendedorRepository = vendedorRepository.getInstance();
     private notafiscalRepository = notaFiscalRepository.getInstance();
 
-    cadastrarVendedor(dados: any): Vendedor {
+    async cadastrarVendedor(dados: any): Promise<Vendedor> {
         const { nome, matricula, comissao_percentual } = dados;
 
         if (!nome || !matricula || comissao_percentual === undefined || comissao_percentual === null)
@@ -15,20 +15,20 @@ export class vendedorService {
         if (comissao_percentual < 0 || comissao_percentual > 30)
             throw new Error("400: O campo comissao_percentual deve ser um número entre 0 e 30.");
 
-        if (this.vendedorRepository.buscarPorMatricula(matricula))
+        if (await this.vendedorRepository.buscarPorMatricula(matricula))
             throw new Error("409: Já existe um vendedor cadastrado com esta matrícula.");
 
         const novoVendedor = new Vendedor(nome, matricula, comissao_percentual);
-        this.vendedorRepository.inserirVendedor(novoVendedor);
+        await this.vendedorRepository.inserirVendedor(novoVendedor);
         return novoVendedor;
     }
 
-    listarTodos(): Vendedor[] {
-        return this.vendedorRepository.mostrarVendedores();
+    async listarTodos(): Promise<Vendedor[]> {
+        return await this.vendedorRepository.mostrarVendedores();
     }
 
-    buscarPorID(id: number): Vendedor {
-        const vendedor = this.vendedorRepository.buscarVendedor(id);
+    async buscarPorID(id: number): Promise<Vendedor> {
+        const vendedor = await this.vendedorRepository.buscarVendedor(id);
 
         if (!vendedor)
             throw new Error("404: Vendedor não encontrado.");
@@ -36,8 +36,8 @@ export class vendedorService {
         return vendedor;
     }
 
-    atualizarVendedor(id: number, dados: any): void {
-        const vendedor = this.vendedorRepository.buscarVendedor(id);
+    async atualizarVendedor(id: number, dados: any): Promise<void> {
+        const vendedor = await this.vendedorRepository.buscarVendedor(id);
 
         if (!vendedor)
             throw new Error("404: Vendedor não encontrado.");
@@ -50,38 +50,32 @@ export class vendedorService {
         if (comissao_percentual < 0 || comissao_percentual > 30)
             throw new Error("400: O campo comissao_percentual deve ser um número entre 0 e 30.");
 
-        const matriculaDuplicada = this.vendedorRepository.buscarPorMatricula(matricula);
+        const matriculaDuplicada = await this.vendedorRepository.buscarPorMatricula(matricula);
         if (matriculaDuplicada && matriculaDuplicada.id_vendedor !== id)
             throw new Error("409: Já existe outro vendedor cadastrado com esta matrícula.");
 
-        this.vendedorRepository.atualizarVendedor(vendedor, dados);
+        await this.vendedorRepository.atualizarVendedor(vendedor, dados);
     }
 
-    // Método incompleto, depende de notaFiscalRepository para verificar
-    removerVendedor(id: number) {
-        const vendedor = this.vendedorRepository.buscarVendedor(id);
+    async removerVendedor(id: number): Promise<void> {
+        const vendedor = await this.vendedorRepository.buscarVendedor(id);
 
-        if(!vendedor) {
-            throw new Error ("Vendedor não encontrado");
-        }
+        if (!vendedor)
+            throw new Error("Vendedor não encontrado");
 
-        const notasVinc = this.notafiscalRepository.buscarPorVendedorId(id);
-        if (notasVinc && notasVinc.length > 0) {
+        const notasVinc = await this.notafiscalRepository.buscarPorVendedorId(id);
+        if (notasVinc && notasVinc.length > 0)
             throw new Error("Não é permitido remover um vendedor que possua notas fiscais vinculadas.");
-        }
 
-        this.vendedorRepository.deletarVendedor(id);
+        await this.vendedorRepository.deletarVendedor(id);
     }
 
-
-    listarNotasDoVendedor(id: number): any[] {
-        const vendedor = this.vendedorRepository.buscarVendedor(id);
+    async listarNotasDoVendedor(id: number): Promise<any[]> {
+        const vendedor = await this.vendedorRepository.buscarVendedor(id);
 
         if (!vendedor)
             throw new Error("404: Vendedor não encontrado.");
 
         return [];
     }
-
-
 }
