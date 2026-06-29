@@ -1,87 +1,96 @@
 import { Request, Response } from "express";
 import { notaFiscalService } from "../services/notaFiscalService";
 
-const NotaFiscalService = new notaFiscalService();
+export class notaFiscalController {
+    private service: notaFiscalService;
 
-export function listarNotas(req: Request, res: Response): void {
-    try {
-        const notas = NotaFiscalService.listarNotas();
-        res.status(200).json(notas);
-    } catch (error: any) {
-        res.status(400).json({ erro: error.message });
+    constructor() {
+        this.service = new notaFiscalService();
     }
-}
 
-export function buscarId(req: Request, res: Response): void {
-    try {
-        const id = Number(req.params.id);
-        const nota = NotaFiscalService.buscarPorNotaId(id);
-        res.status(200).json(nota);
-    } catch (error: any) {
-        const mensagem = error.message;
-
-        if (mensagem.includes("não encontrada")) {
-            res.status(404).json({ erro: mensagem });
-        } else {
-            res.status(400).json({ erro: mensagem });
+    listarNotas = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const notas = await this.service.listarNotas();
+            res.status(200).json(notas);
+        } catch (e: any) {
+            res.status(500).json({ erro: "Erro interno do servidor." });
         }
-    }
-}
+    };
 
-export function emitir(req: Request, res: Response): void {
-    try {
-        const novaNota = NotaFiscalService.emitirNota(req.body);
-        res.status(201).json(novaNota);
-    } catch (error: any) {
-        const mensagem = error.message;
+    buscarId = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const id = Number(req.params.id);
 
-        if (mensagem.includes("já existe")) {
-            res.status(409).json({ erro: mensagem });
-        } 
-        else if (mensagem.includes("Estoque insuficiente")) {
-            res.status(422).json({ erro: mensagem });
-        } 
-        else if (mensagem.includes("não encontrada")) {
-            res.status(404).json({ erro: mensagem });
-        } 
-        else {
-            res.status(400).json({ erro: mensagem });
+            if (isNaN(id)) {
+                res.status(400).json({ erro: "O ID informado na URL deve ser um número." });
+                return;
+            }
+
+            const nota = await this.service.buscarPorNotaId(id);
+            res.status(200).json(nota);
+        } catch (e: any) {
+            if (e.message.includes("não encontrada")) {
+                res.status(404).json({ erro: e.message });
+            } else {
+                res.status(400).json({ erro: e.message });
+            }
         }
-    }
-}
+    };
 
-export function listarNotasPorCliente(req: Request, res: Response): void {
-    try {
-        const clienteId = Number(req.params.id); 
-            
-        const notas = NotaFiscalService.buscarNotasPorCliente(clienteId);
-            
-        res.status(200).json(notas);
-    } catch (error: any) {
-        const mensagem = error.message;
-    
-        if (mensagem.includes("não encontrado") || mensagem.includes("não encontradas")) {
-            res.status(404).json({ erro: mensagem });
-        } else {
-            res.status(400).json({ erro: mensagem });
+    emitir = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const novaNota = await this.service.emitirNota(req.body);
+            res.status(201).json(novaNota);
+        } catch (e: any) {
+            if (e.message.includes("já existe")) {
+                res.status(409).json({ erro: e.message });
+            } else if (e.message.includes("Estoque insuficiente")) {
+                res.status(422).json({ erro: e.message });
+            } else if (e.message.includes("não encontrada") || e.message.includes("não encontrado")) {
+                res.status(404).json({ erro: e.message });
+            } else {
+                res.status(400).json({ erro: e.message });
+            }
         }
-    }
-}
+    };
 
-export function listarNotasPorVendedor(req: Request, res: Response): void {
-    try {
-        const vendedorId = Number(req.params.id); 
-            
-        const notas = NotaFiscalService.buscarNotasPorVendedor(vendedorId);
-            
-        res.status(200).json(notas);
-    } catch (error: any) {
-        const mensagem = error.message;
-    
-        if (mensagem.includes("não encontrado") || mensagem.includes("não encontradas")) {
-            res.status(404).json({ erro: mensagem });
-        } else {
-            res.status(400).json({ erro: mensagem });
+    listarNotasPorCliente = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const id = Number(req.params.id);
+
+            if (isNaN(id)) {
+                res.status(400).json({ erro: "O ID informado na URL deve ser um número." });
+                return;
+            }
+
+            const notas = await this.service.buscarNotasPorCliente(id);
+            res.status(200).json(notas);
+        } catch (e: any) {
+            if (e.message.includes("não encontrado") || e.message.includes("não encontradas")) {
+                res.status(404).json({ erro: e.message });
+            } else {
+                res.status(400).json({ erro: e.message });
+            }
         }
-    }
+    };
+
+    listarNotasPorVendedor = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const id = Number(req.params.id);
+
+            if (isNaN(id)) {
+                res.status(400).json({ erro: "O ID informado na URL deve ser um número." });
+                return;
+            }
+
+            const notas = await this.service.buscarNotasPorVendedor(id);
+            res.status(200).json(notas);
+        } catch (e: any) {
+            if (e.message.includes("não encontrado") || e.message.includes("não encontradas")) {
+                res.status(404).json({ erro: e.message });
+            } else {
+                res.status(400).json({ erro: e.message });
+            }
+        }
+    };
 }

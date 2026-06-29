@@ -1,66 +1,86 @@
 import { Request, Response } from "express";
 import { clienteService } from "../services/clienteService";
 
-const ClienteService = new clienteService();
+export class clienteController {
+    private service: clienteService;
 
-export function cadastrarCliente(req: Request, res: Response): void {
-    try {
-        const novoCliente = ClienteService.cadastrarCliente(req.body);
-        res.status(201).json(novoCliente);
-    } catch (error: any) {
-        const mensagem = error.message;
+    constructor() {
+        this.service = new clienteService();
+    }
 
-        if (mensagem.includes("mesmo CPF")) {
-            res.status(409).json({ erro: mensagem });
-        } else {
-            res.status(400).json({ erro: mensagem });
+    cadastrarCliente = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const novoCliente = await this.service.cadastrarCliente(req.body);
+            res.status(201).json(novoCliente);
+        } catch (e: any) {
+            if (e.message.includes("mesmo CPF")) {
+                res.status(409).json({ erro: e.message });
+            } else {
+                res.status(400).json({ erro: e.message });
+            }
         }
-    }
-}
+    };
 
-export function exibirClientes(req: Request, res: Response): void {
-    try {
-        const clientes = ClienteService.exibirClientes();
-        res.status(200).json(clientes);
-    } catch (error: any) {
-        res.status(400).json({ erro: error.message });
-    }
-}
-
-export function consultarCliente(req: Request, res: Response): void {
-    try {
-        const id = Number(req.params.id);
-        const cliente = ClienteService.consultarCliente(id);
-        res.status(200).json(cliente);
-    } catch (error: any) {
-        res.status(404).json({ erro: error.message });
-    }
-}
-
-export function modificarCliente(req: Request, res: Response): void {
-    try {
-        const id = Number(req.params.id);
-        const clienteAtualizado = ClienteService.modificarCliente(id, req.body);
-        res.status(200).json(clienteAtualizado);
-    } catch (error: any) {
-        const mensagem = error.message;
-
-        if (mensagem.includes("não encontrado")) {
-            res.status(404).json({ erro: mensagem });
-        } else if (mensagem.includes("mesmo CPF")) {
-            res.status(409).json({ erro: mensagem });
-        } else {
-            res.status(400).json({ erro: mensagem });
+    exibirClientes = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const clientes = await this.service.exibirClientes();
+            res.status(200).json(clientes);
+        } catch (e: any) {
+            res.status(500).json({ erro: "Erro interno do servidor." });
         }
-    }
-}
+    };
 
-export function removerCliente(req: Request, res: Response): void {
-    try {
-        const id = Number(req.params.id);
-        ClienteService.removerCliente(id);
-        res.status(200).json({ mensagem: "Cliente removido com sucesso!" });
-    } catch (error: any) {
-        res.status(404).json({ erro: error.message });
-    }
+    consultarCliente = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const id = Number(req.params.id);
+
+            if (isNaN(id)) {
+                res.status(400).json({ erro: "O ID informado na URL deve ser um número." });
+                return;
+            }
+
+            const cliente = await this.service.consultarCliente(id);
+            res.status(200).json(cliente);
+        } catch (e: any) {
+            res.status(404).json({ erro: e.message });
+        }
+    };
+
+    modificarCliente = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const id = Number(req.params.id);
+
+            if (isNaN(id)) {
+                res.status(400).json({ erro: "O ID informado na URL deve ser um número." });
+                return;
+            }
+
+            const clienteAtualizado = await this.service.modificarCliente(id, req.body);
+            res.status(200).json(clienteAtualizado);
+        } catch (e: any) {
+            if (e.message.includes("não encontrado")) {
+                res.status(404).json({ erro: e.message });
+            } else if (e.message.includes("mesmo CPF")) {
+                res.status(409).json({ erro: e.message });
+            } else {
+                res.status(400).json({ erro: e.message });
+            }
+        }
+    };
+
+    removerCliente = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const id = Number(req.params.id);
+
+            if (isNaN(id)) {
+                res.status(400).json({ erro: "O ID informado na URL deve ser um número." });
+                return;
+            }
+
+            await this.service.removerCliente(id);
+            res.status(200).json({ mensagem: "Cliente removido com sucesso!" });
+        } catch (e: any) {
+            res.status(404).json({ erro: e.message });
+        }
+    };
 }
