@@ -1,60 +1,79 @@
 import { Estoque } from "../models/Estoque";
+import { executarComandoSQL } from "../database/mysql";
 
 export class estoqueRepository {
     private static instance: estoqueRepository;
-    private estoques: Estoque[] = [];
 
     static getCreateTableQuery(): string {
-    return `
-        CREATE TABLE IF NOT EXISTS Estoque (
-            id_estoque          BIGINT PRIMARY KEY,
-            id_carro            BIGINT NOT NULL,
-            quantidade          INT NOT NULL,
-            localizacao_patio   VARCHAR(100) NOT NULL,
-            data_entrada        DATETIME NOT NULL,
-            FOREIGN KEY (id_carro) REFERENCES Carro(id_carro)
-        );
-    `;
+        return `
+            CREATE TABLE IF NOT EXISTS Estoque (
+                id_estoque          BIGINT PRIMARY KEY,
+                id_carro            BIGINT NOT NULL,
+                quantidade          INT NOT NULL,
+                localizacao_patio   VARCHAR(100) NOT NULL,
+                data_entrada        DATETIME NOT NULL,
+                FOREIGN KEY (id_carro) REFERENCES Carro(id_carro)
+            );
+        `;
     }
 
     private constructor() {}
 
     public static getInstance(): estoqueRepository {
-        if(!this.instance){
+        if (!this.instance) {
             this.instance = new estoqueRepository();
         }
         return this.instance;
     }
 
-    inserirEstoque(estoque: Estoque){
-        this.estoques.push(estoque);
+    async inserirEstoque(estoque: Estoque): Promise<void> {
+        const query = `
+            INSERT INTO Estoque (id_estoque, id_carro, quantidade, localizacao_patio, data_entrada)
+            VALUES (?, ?, ?, ?, ?)
+        `;
+        await executarComandoSQL(query, [
+            estoque.id_estoque,
+            estoque.id_carro,
+            estoque.quantidade,
+            estoque.localizacao_patio,
+            estoque.data_entrada,
+        ]);
     }
 
-    listarEstoques(): Estoque[] {
-        return this.estoques;
+    async listarEstoques(): Promise<Estoque[]> {
+        const query = `SELECT * FROM Estoque`;
+        return await executarComandoSQL(query, []);
     }
 
-    buscarEstoquePorId(id: number): Estoque|undefined {
-        return this.estoques.find(estoque => estoque.id_estoque === id);
+    async buscarEstoquePorId(id: number): Promise<Estoque | undefined> {
+        const query = `SELECT * FROM Estoque WHERE id_estoque = ?`;
+        const resultado = await executarComandoSQL(query, [id]);
+        return resultado[0];
     }
 
-    buscarEstoqueCarro(id: number): Estoque|undefined {
-        return this.estoques.find(estoque => estoque.id_carro === id);
+    async buscarEstoqueCarro(id_carro: number): Promise<Estoque | undefined> {
+        const query = `SELECT * FROM Estoque WHERE id_carro = ?`;
+        const resultado = await executarComandoSQL(query, [id_carro]);
+        return resultado[0];
     }
 
-    atualizarEstoque(estoqueAtualizado: Estoque) {
-        const estoqueIndex = this.estoques.findIndex(estoque => estoque.id_estoque === estoqueAtualizado.id_estoque);
-        
-        if (estoqueIndex !== -1) {
-            this.estoques[estoqueIndex] = estoqueAtualizado;
-        }
+    async atualizarEstoque(estoque: Estoque): Promise<void> {
+        const query = `
+            UPDATE Estoque
+            SET id_carro = ?, quantidade = ?, localizacao_patio = ?, data_entrada = ?
+            WHERE id_estoque = ?
+        `;
+        await executarComandoSQL(query, [
+            estoque.id_carro,
+            estoque.quantidade,
+            estoque.localizacao_patio,
+            estoque.data_entrada,
+            estoque.id_estoque,
+        ]);
     }
 
-    deletarEstoque(id:number) {
-        const estoqueIndex = this.estoques.findIndex(estoque => estoque.id_estoque === id);
-        
-        if (estoqueIndex !== -1) {
-            this.estoques.splice(estoqueIndex, 1);
-        }
+    async deletarEstoque(id: number): Promise<void> {
+        const query = `DELETE FROM Estoque WHERE id_estoque = ?`;
+        await executarComandoSQL(query, [id]);
     }
 }
