@@ -1,23 +1,22 @@
 import { Vendedor } from "../models/Vendedor";
+import { executarComandoSQL } from "../database/mysql";
 
-export class vendedorRepository{
+export class vendedorRepository {
     private static instance: vendedorRepository;
-    private vendedores: Vendedor[] = [];
 
     static getCreateTableQuery(): string {
-    return `
-        CREATE TABLE IF NOT EXISTS Vendedor (
-            id_vendedor         BIGINT PRIMARY KEY,
-            nome                VARCHAR(150) NOT NULL,
-            matricula           VARCHAR(50) NOT NULL UNIQUE,
-            comissao_percentual DECIMAL(5,2) NOT NULL
-        );
-    `;
-}
- 
+        return `
+            CREATE TABLE IF NOT EXISTS Vendedor (
+                id_vendedor         BIGINT PRIMARY KEY,
+                nome                VARCHAR(150) NOT NULL,
+                matricula           VARCHAR(50) NOT NULL UNIQUE,
+                comissao_percentual DECIMAL(5,2) NOT NULL
+            );
+        `;
+    }
+
     private constructor() {}
 
-    // vendedor vazio
     static getInstance(): vendedorRepository {
         if (!vendedorRepository.instance) {
             vendedorRepository.instance = new vendedorRepository();
@@ -25,35 +24,52 @@ export class vendedorRepository{
         return vendedorRepository.instance;
     }
 
-    //inseir vendedor
-    inserirVendedor(vendedor: Vendedor): void {
-        this.vendedores.push(vendedor);
+    async inserirVendedor(vendedor: Vendedor): Promise<void> {
+        const query = `
+            INSERT INTO Vendedor (id_vendedor, nome, matricula, comissao_percentual)
+            VALUES (?, ?, ?, ?)
+        `;
+        await executarComandoSQL(query, [
+            vendedor.id_vendedor,
+            vendedor.nome,
+            vendedor.matricula,
+            vendedor.comissao_percentual,
+        ]);
     }
 
-    //mostrar vendedores
-    mostrarVendedores(): Vendedor[] {
-        return this.vendedores;
+    async mostrarVendedores(): Promise<Vendedor[]> {
+        const query = `SELECT * FROM Vendedor`;
+        return await executarComandoSQL(query, []);
     }
 
-    //buscar vendedores
-    buscarVendedor(id: number): Vendedor | undefined {
-        return this.vendedores.find(v => v.id_vendedor === id);
+    async buscarVendedor(id: number): Promise<Vendedor | undefined> {
+        const query = `SELECT * FROM Vendedor WHERE id_vendedor = ?`;
+        const resultado = await executarComandoSQL(query, [id]);
+        return resultado[0];
     }
 
-    //buscar por matrícula
-    buscarPorMatricula(matricula: string): Vendedor | undefined {
-        return this.vendedores.find(v => v.matricula === matricula);
+    async buscarPorMatricula(matricula: string): Promise<Vendedor | undefined> {
+        const query = `SELECT * FROM Vendedor WHERE matricula = ?`;
+        const resultado = await executarComandoSQL(query, [matricula]);
+        return resultado[0];
     }
 
-    //atualizar vendedor
-    atualizarVendedor(vendedor: Vendedor, novosDados: any): void {
-        vendedor.nome = novosDados.nome;
-        vendedor.matricula = novosDados.matricula;
-        vendedor.comissao_percentual = novosDados.comissao_percentual;
+    async atualizarVendedor(vendedor: Vendedor, novosDados: any): Promise<void> {
+        const query = `
+            UPDATE Vendedor
+            SET nome = ?, matricula = ?, comissao_percentual = ?
+            WHERE id_vendedor = ?
+        `;
+        await executarComandoSQL(query, [
+            novosDados.nome,
+            novosDados.matricula,
+            novosDados.comissao_percentual,
+            vendedor.id_vendedor,
+        ]);
     }
 
-    //deletar vendedor
-    deletarVendedor(id: number): void {
-        this.vendedores = this.vendedores.filter(v => v.id_vendedor !== id);
+    async deletarVendedor(id: number): Promise<void> {
+        const query = `DELETE FROM Vendedor WHERE id_vendedor = ?`;
+        await executarComandoSQL(query, [id]);
     }
 }
