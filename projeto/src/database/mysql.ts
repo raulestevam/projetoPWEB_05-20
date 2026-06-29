@@ -11,7 +11,7 @@ const dbConfig = {
     port: 3306,
     user: 'root',
     password: 'mysql',
-    database: 'projetoPWEB_06-19'
+    //removido database - banco cria automaticamente
 };
 
 const mysqlConnection: Connection = mysql.createConnection(dbConfig);
@@ -39,18 +39,18 @@ export function executarComandoSQL(query: string, valores: any[]): Promise<any> 
 export async function inicializarBanco(): Promise<void> {
     console.log('Sincronizando schemas do banco de dados...');
     
-    const schemas = [ //criar cada uma das tabelas no repository para cada ator;
-        carroRepository.getCreateTableQuery(),
-        clienteRepository.getCreateTableQuery(),
-        estoqueRepository.getCreateTableQuery(),
-        notaFiscalRepository.getCreateTableQuery(),
-        vendedorRepository.getCreateTableQuery(),
-    ];
-    
     try {
-        
-        await executarComandoSQL(`USE ${dbConfig.database}`, []);
-        console.log(`Conectado ao schema: ${dbConfig.database}`);
+        await executarComandoSQL('CREATE DATABASE IF NOT EXISTS `projetoPWEB`', []);
+        await executarComandoSQL('USE `projetoPWEB`', []);
+        console.log('Conectado ao schema: projetoPWEB');
+
+        const schemas = [
+            carroRepository.getCreateTableQuery(),
+            clienteRepository.getCreateTableQuery(),
+            vendedorRepository.getCreateTableQuery(),  
+            estoqueRepository.getCreateTableQuery(),
+            notaFiscalRepository.getCreateTableQuery(), 
+        ];
 
         for (const query of schemas) {
             await executarComandoSQL(query, []);
