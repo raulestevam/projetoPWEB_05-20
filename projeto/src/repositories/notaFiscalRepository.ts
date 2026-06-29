@@ -71,4 +71,10 @@ export class notaFiscalRepository {
         const query = `SELECT * FROM NotaFiscal WHERE id_vendedor = ?`;
         return await executarComandoSQL(query, [id_vendedor]);
     }
+    //busca dentro do banco em vez de pela memória
+    async buscarPorNumeroNota(numero_nota: string): Promise<NotaFiscal | undefined> {
+        const query = `SELECT * FROM NotaFiscal WHERE numero_nota = ?`;
+        const resultado = await executarComandoSQL(query, [numero_nota]);
+        return resultado[0];
+    }
 }
