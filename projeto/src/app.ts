@@ -1,9 +1,9 @@
 import express from "express"
-import router from "./routes/router";
+import router from "./router/router"
 import { inicializarBanco } from "./database/mysql";
 
-const app: Application = express();
-const PORT: number = 3000;
+const app = express();
+const PORT = process.env.PORT ?? 3000
 app.use(express.json());
 
 app.use('/api', router);
